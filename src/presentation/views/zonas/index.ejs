@@ -1,0 +1,72 @@
+<%- include('../partials/header') %>
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+    <div>
+        <h2 class="fw-bold mb-1">Zonas de Almacenamiento</h2>
+        <p class="text-muted mb-0">Gestión de áreas físicas, control de capacidad y especificación de temperatura.</p>
+    </div>
+    <a href="/zonas/nueva" class="btn btn-primary d-flex align-items-center gap-2">
+        <i class="bi bi-plus-circle-fill"></i> Crear Nueva Zona
+    </a>
+</div>
+
+<div class="row g-4">
+    <% if (zonas.length === 0) { %>
+        <div class="col-12">
+            <div class="card p-5 text-center text-muted">
+                <i class="bi bi-grid-3x3 fs-1 d-block mb-3"></i>
+                <h5>No hay zonas registradas</h5>
+                <p>Crea la primera zona de almacenamiento para comenzar a ubicar productos.</p>
+            </div>
+        </div>
+    <% } else { %>
+        <% zonas.forEach(item => { 
+            const z = item.zona;
+        %>
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm border-top border-4 <%= z.getEsRefrigerada() ? 'border-info' : 'border-warning' %>">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <span class="badge bg-light text-muted border">ID: <%= z.getId() %></span>
+                                <h5 class="card-title fw-bold mt-1 mb-0"><%= z.getNombre() %></h5>
+                            </div>
+                            <% if (z.getEsRefrigerada()) { %>
+                                <span class="badge badge-frio p-2"><i class="bi bi-snow fs-6"></i> Refrigerada</span>
+                            <% } else { %>
+                                <span class="badge badge-seco p-2"><i class="bi bi-sun fs-6"></i> Secos</span>
+                            <% } %>
+                        </div>
+
+                        <div class="my-3">
+                            <div class="d-flex justify-content-between small text-muted mb-1">
+                                <span>Ocupación de Capacidad:</span>
+                                <strong><%= item.cantidadOcupada %> / <%= item.capacidadMaxima %> productos</strong>
+                            </div>
+                            <div class="progress" style="height: 12px;">
+                                <div class="progress-bar <%= item.porcentajeOcupacion >= 90 ? 'bg-danger' : (item.porcentajeOcupacion >= 70 ? 'bg-warning' : 'bg-success') %>" 
+                                     role="progressbar" 
+                                     style="width: <%= item.porcentajeOcupacion %>%">
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between small text-muted mt-1">
+                                <span><%= item.porcentajeOcupacion %>% ocupado</span>
+                                <span class="<%= item.capacidadDisponible === 0 ? 'text-danger fw-bold' : '' %>">
+                                    <%= item.capacidadDisponible %> disponibles
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <a href="/zonas/<%= z.getId() %>" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-eye-fill me-1"></i> Ver Productos Almacenados
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+    <% } %>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,123 @@
+<%- include('../partials/header') %>
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+    <div>
+        <h2 class="fw-bold mb-1">Catálogo de Productos en Inventario</h2>
+        <p class="text-muted mb-0">Listado general de artículos, clasificación térmica y control de stock.</p>
+    </div>
+    <a href="/productos/nuevo" class="btn btn-primary d-flex align-items-center gap-2">
+        <i class="bi bi-plus-circle-fill"></i> Registrar Nuevo Producto
+    </a>
+</div>
+
+<!-- Filtros de búsqueda -->
+<div class="card p-3 mb-4">
+    <form method="GET" action="/productos" class="row g-2 align-items-center">
+        <div class="col-md-5">
+            <div class="input-group">
+                <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                <input type="text" name="busqueda" class="form-control" placeholder="Buscar por nombre, código de barras o país..." value="<%= busqueda %>">
+            </div>
+        </div>
+        <div class="col-md-4">
+            <select name="zonaId" class="form-select">
+                <option value="">-- Todas las Zonas --</option>
+                <% zonas.forEach(z => { %>
+                    <option value="<%= z.zona.getId() %>" <%= String(zonaSeleccionada) === String(z.zona.getId()) ? 'selected' : '' %>>
+                        <%= z.zona.getNombre() %> (<%= z.zona.getEsRefrigerada() ? 'Refrigerada' : 'Secos' %>)
+                    </option>
+                <% }) %>
+            </select>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-secondary flex-grow-1">Filtrar</button>
+            <% if (busqueda || zonaSeleccionada) { %>
+                <a href="/productos" class="btn btn-outline-secondary">Limpiar</a>
+            <% } %>
+        </div>
+    </form>
+</div>
+
+<!-- Tabla de Productos -->
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Código</th>
+                    <th>Producto</th>
+                    <th>Tipo / Térmica</th>
+                    <th>Zona Asignada</th>
+                    <th>Origen / Productor</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th class="text-end">Ajustar Stock</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (items.length === 0) { %>
+                    <tr>
+                        <td colspan="8" class="text-center py-5 text-muted">
+                            <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                            No se encontraron productos con los criterios especificados.
+                        </td>
+                    </tr>
+                <% } else { %>
+                    <% items.forEach(item => { 
+                        const p = item.producto;
+                    %>
+                        <tr>
+                            <td>
+                                <code class="fw-bold text-dark"><%= p.getCodigoDeBarras() %></code>
+                                <small class="d-block text-muted">Lote: <%= p.getNumeroDeLote() %></small>
+                            </td>
+                            <td>
+                                <div class="fw-bold"><%= p.getNombre() %></div>
+                                <small class="text-muted">Vence: <%= p.getCaducidad().toLocaleDateString('es-AR') %></small>
+                            </td>
+                            <td>
+                                <% if (p.getEsFrio()) { %>
+                                    <span class="badge badge-frio d-inline-flex align-items-center gap-1">
+                                        <i class="bi bi-snow"></i> Frío (<%= typeof p.getTemperaturaRecomendada === 'function' ? p.getTemperaturaRecomendada() : 0 %>°C)
+                                    </span>
+                                <% } else { %>
+                                    <span class="badge badge-seco d-inline-flex align-items-center gap-1">
+                                        <i class="bi bi-sun"></i> Seco
+                                    </span>
+                                <% } %>
+                                <span class="badge bg-light text-secondary border ms-1"><%= p.getTipo() %></span>
+                            </td>
+                            <td>
+                                <span class="badge bg-primary bg-opacity-10 text-primary">
+                                    <i class="bi bi-geo-alt-fill me-1"></i><%= item.zonaNombre %>
+                                </span>
+                            </td>
+                            <td>
+                                <div><i class="bi bi-globe me-1"></i><%= p.getPaisDeOrigen() %></div>
+                                <small class="text-muted"><%= p.getProductor() %></small>
+                            </td>
+                            <td class="fw-bold text-success">
+                                $<%= p.getPrecio().toFixed(2) %>
+                            </td>
+                            <td>
+                                <span class="badge <%= p.getCantidad() > 10 ? 'bg-success' : (p.getCantidad() > 0 ? 'bg-warning text-dark' : 'bg-danger') %> fs-6">
+                                    <%= p.getCantidad() %> uds
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                <form method="POST" action="/productos/<%= p.getId() %>/stock" class="d-inline-flex align-items-center gap-1 justify-content-end">
+                                    <input type="number" name="nuevoStock" value="<%= p.getCantidad() %>" min="0" class="form-control form-control-sm text-center" style="width: 75px;" required>
+                                    <button type="submit" class="btn btn-sm btn-outline-primary" title="Guardar stock">
+                                        <i class="bi bi-save"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }) %>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

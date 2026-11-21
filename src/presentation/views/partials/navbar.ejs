@@ -1,0 +1,48 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+            <i class="bi bi-box-seam-fill text-primary fs-4"></i>
+            <span>SuperStock <small class="fw-normal text-muted fs-6">| 3 Capas</small></span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link <%= typeof path !== 'undefined' && path === '/' ? 'active fw-bold' : '' %>" href="/">
+                        <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <%= typeof path !== 'undefined' && path.startsWith('/productos') ? 'active fw-bold' : '' %>" href="/productos">
+                        <i class="bi bi-boxes me-1"></i> Productos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <%= typeof path !== 'undefined' && path.startsWith('/zonas') ? 'active fw-bold' : '' %>" href="/zonas">
+                        <i class="bi bi-grid-3x3-gap-fill me-1"></i> Zonas
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <%= typeof path !== 'undefined' && path.startsWith('/empleados') ? 'active fw-bold' : '' %>" href="/empleados">
+                        <i class="bi bi-people-fill me-1"></i> Empleados
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <%= typeof path !== 'undefined' && path === '/descuentos' ? 'active fw-bold' : '' %>" href="/descuentos">
+                        <i class="bi bi-percent me-1"></i> Descuentos
+                    </a>
+                </li>
+            </ul>
+            <div class="d-flex gap-2">
+                <a href="/ventas/nueva" class="btn btn-warning fw-semibold d-flex align-items-center gap-1">
+                    <i class="bi bi-cart-check-fill"></i> Terminal Caja (Venta)
+                </a>
+                <a href="/ventas" class="btn btn-outline-light d-flex align-items-center gap-1">
+                    <i class="bi bi-clock-history"></i> Historial
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>

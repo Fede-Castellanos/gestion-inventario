@@ -1,0 +1,108 @@
+<%- include('../partials/header') %>
+
+<% const z = data.zona; %>
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a href="/zonas">Zonas</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><%= z.getNombre() %></li>
+            </ol>
+        </nav>
+        <h2 class="fw-bold mb-0">Zona: <%= z.getNombre() %> (ID: <%= z.getId() %>)</h2>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="/productos/nuevo?zonaId=<%= z.getId() %>" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus-lg me-1"></i> Agregar Producto a esta Zona
+        </a>
+        <a href="/zonas" class="btn btn-outline-secondary btn-sm">Volver a Zonas</a>
+    </div>
+</div>
+
+<!-- Tarjetas de Resumen de Zona -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card p-3">
+            <span class="text-muted small text-uppercase fw-bold">Régimen Térmico</span>
+            <div class="mt-2">
+                <% if (z.getEsRefrigerada()) { %>
+                    <span class="badge badge-frio p-2 fs-6"><i class="bi bi-snow me-1"></i> Zona Refrigerada</span>
+                <% } else { %>
+                    <span class="badge badge-seco p-2 fs-6"><i class="bi bi-sun me-1"></i> Secos / Temperatura Ambiente</span>
+                <% } %>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3">
+            <span class="text-muted small text-uppercase fw-bold">Capacidad</span>
+            <h4 class="fw-bold mb-0 mt-1"><%= data.cantidadOcupada %> / <%= data.capacidadMaxima %> productos</h4>
+            <div class="progress mt-2" style="height: 8px;">
+                <div class="progress-bar <%= data.porcentajeOcupacion >= 90 ? 'bg-danger' : (data.porcentajeOcupacion >= 70 ? 'bg-warning' : 'bg-success') %>" 
+                     role="progressbar" 
+                     style="width: <%= data.porcentajeOcupacion %>%">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3">
+            <span class="text-muted small text-uppercase fw-bold">Disponibilidad</span>
+            <h4 class="fw-bold <%= data.capacidadDisponible === 0 ? 'text-danger' : 'text-success' %> mb-0 mt-1">
+                <%= data.capacidadDisponible %> espacios libres
+            </h4>
+            <small class="text-muted mt-2"><%= data.porcentajeOcupacion %>% de capacidad en uso</small>
+        </div>
+    </div>
+</div>
+
+<!-- Listado de Productos en la Zona -->
+<div class="card shadow-sm">
+    <div class="card-header bg-white py-3">
+        <h5 class="fw-bold mb-0"><i class="bi bi-boxes me-2 text-primary"></i> Productos almacenados en esta zona</h5>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Código de Barras</th>
+                    <th>Producto</th>
+                    <th>Lote</th>
+                    <th>País Origen</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (data.productos.length === 0) { %>
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">
+                            Esta zona no tiene productos almacenados todavía.
+                        </td>
+                    </tr>
+                <% } else { %>
+                    <% data.productos.forEach(item => { 
+                        const p = item.producto;
+                    %>
+                        <tr>
+                            <td><code><%= p.getCodigoDeBarras() %></code></td>
+                            <td>
+                                <div class="fw-bold"><%= p.getNombre() %></div>
+                                <small class="text-muted"><%= p.getTipo() %></small>
+                            </td>
+                            <td><%= p.getNumeroDeLote() %></td>
+                            <td><%= p.getPaisDeOrigen() %></td>
+                            <td class="fw-bold text-success">$<%= p.getPrecio().toFixed(2) %></td>
+                            <td>
+                                <span class="badge bg-secondary"><%= p.getCantidad() %> unidades</span>
+                            </td>
+                        </tr>
+                    <% }) %>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,91 @@
+<%- include('../partials/header') %>
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+    <div>
+        <h2 class="fw-bold mb-1">Historial de Ventas Registradas</h2>
+        <p class="text-muted mb-0">Auditoría de operaciones cobradas en caja con registro de cajero y descuentos aplicados.</p>
+    </div>
+    <a href="/ventas/nueva" class="btn btn-warning fw-semibold d-flex align-items-center gap-2">
+        <i class="bi bi-cart-plus-fill"></i> Ir a Terminal de Caja
+    </a>
+</div>
+
+<!-- Métricas de Ventas -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card p-3 border-start border-primary border-4">
+            <span class="text-muted small text-uppercase fw-bold">Total Transacciones</span>
+            <h3 class="fw-bold text-primary mb-0 mt-1"><%= metricas.total_ventas || 0 %> ventas</h3>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3 border-start border-success border-4">
+            <span class="text-muted small text-uppercase fw-bold">Unidades Vendidas</span>
+            <h3 class="fw-bold text-success mb-0 mt-1"><%= metricas.unidades_vendidas || 0 %> productos</h3>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3 border-start border-warning border-4">
+            <span class="text-muted small text-uppercase fw-bold">Recaudación Total</span>
+            <h3 class="fw-bold text-warning mb-0 mt-1">$<%= Number(metricas.total_recaudado || 0).toLocaleString('es-AR', { minimumFractionDigits: 2 }) %></h3>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Ticket #</th>
+                    <th>Fecha y Hora</th>
+                    <th>Producto</th>
+                    <th>Origen</th>
+                    <th>Cantidad</th>
+                    <th>Precio Lista</th>
+                    <th>Descuento</th>
+                    <th>Total Cobrado</th>
+                    <th>Cajero / Operador</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (ventas.length === 0) { %>
+                    <tr>
+                        <td colspan="9" class="text-center py-5 text-muted">
+                            No se registran ventas realizadas hasta el momento.
+                        </td>
+                    </tr>
+                <% } else { %>
+                    <% ventas.forEach(v => { %>
+                        <tr>
+                            <td><code>#<%= v.id %></code></td>
+                            <td><%= new Date(v.fecha).toLocaleString('es-AR') %></td>
+                            <td>
+                                <div class="fw-bold"><%= v.producto_nombre %></div>
+                                <small class="text-muted"><code><%= v.codigo_barras %></code></small>
+                            </td>
+                            <td><%= v.pais_de_origen %></td>
+                            <td><span class="badge bg-secondary"><%= v.cantidad %> uds</span></td>
+                            <td>$<%= Number(v.precio_unitario).toFixed(2) %></td>
+                            <td>
+                                <% const desc = Math.round((1 - Number(v.descuento_aplicado)) * 100); %>
+                                <% if (desc > 0) { %>
+                                    <span class="badge bg-success"><%= desc %>% OFF</span>
+                                <% } else { %>
+                                    <span class="badge bg-light text-muted border">Sin desc.</span>
+                                <% } %>
+                            </td>
+                            <td class="fw-bold text-success fs-6">$<%= Number(v.total_cobrado).toFixed(2) %></td>
+                            <td>
+                                <div><%= v.empleado_nombre %> <%= v.empleado_apellido %></div>
+                                <small class="badge bg-light text-dark border"><%= v.empleado_puesto %></small>
+                            </td>
+                        </tr>
+                    <% }) %>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

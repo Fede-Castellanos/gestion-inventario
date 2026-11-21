@@ -8,7 +8,7 @@ export default class Empleado {
     #salario;
 
     constructor(id, nombre, apellido, puesto, zonaAsignada, fechaIngreso, salario) {
-        const puestosValidos = ["Gerente", "Supervisor", "Operario"];
+        const puestosValidos = ["Gerente", "Supervisor", "Operario", "Cajero"];
         if (!puestosValidos.includes(puesto)) {
             throw new Error(`Fallo de seguridad: El puesto '${puesto}' no existe en la jerarquía del supermercado.`);
         }//Valida que el puesto sea uno de los permitidos, si no, muestra error

@@ -1,0 +1,49 @@
+<%- include('../partials/header') %>
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h4 class="mb-0 fw-bold"><i class="bi bi-grid-fill me-2 text-primary"></i> Crear Nueva Zona</h4>
+                <a href="/zonas" class="btn btn-outline-secondary btn-sm">Volver</a>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="/zonas/nueva">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">ID de Zona (Opcional)</label>
+                        <input type="number" name="id" class="form-control" placeholder="Ej: 103 (Dejar en blanco para autogenerar)" value="<%= formData.id || '' %>">
+                        <div class="form-text">Puedes asignarle un código numérico manual o dejar que la base de datos lo asigne.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Nombre de la Zona / Ubicación <span class="text-danger">*</span></label>
+                        <input type="text" name="nombre" class="form-control" placeholder="Ej: Pasillo Lácteos, Depósito A" value="<%= formData.nombre || '' %>" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Capacidad Máxima (Cantidad de productos distintos) <span class="text-danger">*</span></label>
+                        <input type="number" name="capacidadMaxima" min="1" class="form-control" placeholder="Ej: 200" value="<%= formData.capacidadMaxima || '' %>" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Tipo Térmico de la Zona <span class="text-danger">*</span></label>
+                        <select name="esRefrigerada" class="form-select" required>
+                            <option value="0" <%= formData.esRefrigerada === '0' ? 'selected' : '' %>>Secos / No Refrigerada (Para productos calientes/ambiente)</option>
+                            <option value="1" <%= formData.esRefrigerada === '1' ? 'selected' : '' %>>Refrigerada (Para lácteos, carnes y productos fríos)</option>
+                        </select>
+                        <div class="form-text">Esta propiedad previene por regla de negocio que se almacenen productos con temperatura incompatible.</div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                        <a href="/zonas" class="btn btn-outline-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-primary px-4 fw-semibold">
+                            <i class="bi bi-check-lg me-1"></i> Guardar Zona
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

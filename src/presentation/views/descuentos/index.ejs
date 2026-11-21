@@ -1,0 +1,91 @@
+<%- include('../partials/header') %>
+
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h4 class="mb-0 fw-bold"><i class="bi bi-tag-fill me-2 text-primary"></i> Configurar Descuento por País</h4>
+            </div>
+            <div class="card-body p-4">
+                <p class="text-muted small">
+                    El sistema aplica automáticamente este descuento comercial cuando un producto con dicho país de origen es vendido en caja o al valorizar el inventario.
+                </p>
+
+                <form method="POST" action="/descuentos">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">País de Procedencia <span class="text-danger">*</span></label>
+                        <input type="text" name="pais" class="form-control" placeholder="Ej: Argentina, Brasil, España..." required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Factor Multiplicador Decimal <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="number" step="0.01" min="0.01" max="1" name="factorDecimal" class="form-control" placeholder="Ej: 0.90 para 10% de descuento" required>
+                            <span class="input-group-text"><i class="bi bi-percent"></i></span>
+                        </div>
+                        <div class="form-text">
+                            Valor entre 0 y 1. Ejemplos:
+                            <br><code>0.90</code> = 10% de descuento
+                            <br><code>0.85</code> = 15% de descuento
+                            <br><code>0.70</code> = 30% de descuento
+                        </div>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary fw-semibold">
+                            <i class="bi bi-save me-1"></i> Guardar Política de Descuento
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-list-check me-2 text-success"></i> Políticas de Descuento Activas</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>País</th>
+                            <th>Factor Decimal</th>
+                            <th>Descuento Efectivo</th>
+                            <th class="text-end">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (descuentos.length === 0) { %>
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">
+                                    No hay descuentos configurados. Todos los países pagan el 100% de la lista.
+                                </td>
+                            </tr>
+                        <% } else { %>
+                            <% descuentos.forEach(d => { %>
+                                <tr>
+                                    <td class="fw-bold"><i class="bi bi-geo-alt me-1 text-primary"></i> <%= d.pais %></td>
+                                    <td><code><%= d.factorDecimal %></code></td>
+                                    <td>
+                                        <span class="badge bg-success fs-6"><%= d.porcentaje %>% OFF</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <form method="POST" action="/descuentos/<%= d.id %>/eliminar" onsubmit="return confirm('¿Seguro que deseas eliminar el descuento para <%= d.pais %>?');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar descuento">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

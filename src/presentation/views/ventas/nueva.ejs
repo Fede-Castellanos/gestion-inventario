@@ -1,0 +1,107 @@
+<%- include('../partials/header') %>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h4 class="mb-0 fw-bold"><i class="bi bi-cart-check-fill me-2 text-warning"></i> Terminal de Ventas (Punto de Venta)</h4>
+            </div>
+            <div class="card-body p-4">
+                <div class="alert alert-warning d-flex align-items-center gap-2 mb-4">
+                    <i class="bi bi-shield-exclamation fs-4"></i>
+                    <div>
+                        <strong>Regla de Caja:</strong> Solo empleados con puesto de <strong>Cajero</strong> o <strong>Gerente</strong> tienen autorización para operar la caja registradora.
+                        <br><small>Los descuentos comerciales se aplican automáticamente según el país de procedencia del producto.</small>
+                    </div>
+                </div>
+
+                <form method="POST" action="/ventas/nueva" id="formVenta">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Empleado Operador de Caja <span class="text-danger">*</span></label>
+                        <select name="empleadoId" class="form-select" required>
+                            <option value="">-- Seleccionar Cajero/Gerente --</option>
+                            <% empleados.forEach(e => { %>
+                                <option value="<%= e.getId() %>" <%= formData.empleadoId == e.getId() ? 'selected' : '' %>>
+                                    <%= e.getNombreCompleto() %> (<%= e.getPuesto() %>) <%= e.puedeOperarCaja() ? '✅ (Autorizado para caja)' : '❌ (Sin autorización)' %>
+                                </option>
+                            <% }) %>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Código de Barras del Producto <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-upc-scan"></i></span>
+                            <input type="text" name="codigoBarras" id="inputCodigoBarras" class="form-control" placeholder="Escanear o ingresar código de barras" value="<%= formData.codigoBarras || '' %>" required autofocus>
+                        </div>
+                        <div class="form-text">Ejemplos para probar: <code>25588751746</code> (Fideos), <code>25588751747</code> (Leche), <code>25588751748</code> (Café)</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Cantidad a Vender <span class="text-danger">*</span></label>
+                        <input type="number" name="cantidad" min="1" value="<%= formData.cantidad || 1 %>" class="form-control" required>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success btn-lg fw-bold">
+                            <i class="bi bi-cart-plus me-1"></i> Cobrar y Procesar Venta
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel de Recibo / Confirmación de Venta -->
+    <div class="col-lg-5">
+        <% if (recibo) { %>
+            <div class="card shadow-sm border-success border-2">
+                <div class="card-header bg-success text-white py-3">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-receipt-cutoff me-2"></i> Comprobante de Venta #<%= recibo.ventaId %></h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center pb-3 border-bottom mb-3">
+                        <h4 class="fw-bold mb-1"><%= recibo.articulo.nombre %></h4>
+                        <span class="badge bg-light text-dark border">Origen: <%= recibo.articulo.paisDeOrigen %></span>
+                    </div>
+
+                    <ul class="list-group list-group-flush mb-3">
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span>Cantidad:</span>
+                            <strong><%= recibo.cantidad %> unidades</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span>Precio Unitario Lista:</span>
+                            <span>$<%= recibo.precioUnitario.toFixed(2) %></span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span>Subtotal Bruto:</span>
+                            <span>$<%= (recibo.precioUnitario * recibo.cantidad).toFixed(2) %></span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0 text-success">
+                            <span>Descuento País (<%= recibo.articulo.paisDeOrigen %>):</span>
+                            <strong><%= recibo.descuentoPorcentaje %>% OFF</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0 fs-5 fw-bold text-dark pt-3 border-top">
+                            <span>Total Cobrado:</span>
+                            <span class="text-success">$<%= recibo.totalCobrado.toFixed(2) %></span>
+                        </li>
+                    </ul>
+
+                    <div class="bg-light p-3 rounded small text-muted">
+                        <div><strong>Operador de Caja:</strong> <%= recibo.empleado.nombreCompleto %> (<%= recibo.empleado.puesto %>)</div>
+                        <div><strong>Stock remanente en estantería:</strong> <%= recibo.nuevoStock %> uds</div>
+                    </div>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="card shadow-sm h-100 d-flex justify-content-center align-items-center p-5 text-center text-muted">
+                <i class="bi bi-receipt fs-1 d-block mb-3 text-secondary"></i>
+                <h5>Esperando Operación de Venta</h5>
+                <p class="small mb-0">Completa el formulario a la izquierda con el código de barras y el cajero autorizado para emitir el ticket de venta.</p>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

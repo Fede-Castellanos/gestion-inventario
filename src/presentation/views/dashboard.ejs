@@ -1,0 +1,174 @@
+<%- include('partials/header') %>
+
+<div class="row align-items-center mb-4">
+    <div class="col-md-8">
+        <h2 class="fw-bold mb-1">Panel de Control General</h2>
+        <p class="text-muted mb-0">Resumen en tiempo real del inventario, ocupación térmica y valorización comercial.</p>
+    </div>
+    <div class="col-md-4 text-md-end mt-3 mt-md-0 d-flex gap-2 justify-content-md-end">
+        <a href="/productos/nuevo" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i> Agregar Producto
+        </a>
+        <a href="/ventas/nueva" class="btn btn-success">
+            <i class="bi bi-cart-plus me-1"></i> Nueva Venta
+        </a>
+    </div>
+</div>
+
+<!-- Métricas de Inventario -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="card p-3 border-start border-primary border-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted small text-uppercase fw-bold">Valor Inventario (c/ desc)</span>
+                    <h3 class="fw-bold text-primary mb-0 mt-1">$<%= metricas.totalConDescuentos.toLocaleString('es-AR', { minimumFractionDigits: 2 }) %></h3>
+                </div>
+                <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-circle">
+                    <i class="bi bi-currency-dollar fs-4"></i>
+                </div>
+            </div>
+            <small class="text-muted mt-2 d-block">
+                Bruto: $<%= metricas.totalBruto.toLocaleString('es-AR', { minimumFractionDigits: 2 }) %> 
+                <span class="text-success">(-$<%= metricas.totalDescuentoAhorrado.toLocaleString('es-AR', { minimumFractionDigits: 2 }) %>)</span>
+            </small>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="card p-3 border-start border-success border-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted small text-uppercase fw-bold">Stock Total</span>
+                    <h3 class="fw-bold text-success mb-0 mt-1"><%= metricas.totalUnidadesStock %> uds</h3>
+                </div>
+                <div class="p-3 bg-success bg-opacity-10 text-success rounded-circle">
+                    <i class="bi bi-boxes fs-4"></i>
+                </div>
+            </div>
+            <small class="text-muted mt-2 d-block"><%= metricas.totalProductos %> productos distintos registrados</small>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="card p-3 border-start border-info border-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted small text-uppercase fw-bold">Zonas Activas</span>
+                    <h3 class="fw-bold text-info mb-0 mt-1"><%= zonas.length %></h3>
+                </div>
+                <div class="p-3 bg-info bg-opacity-10 text-info rounded-circle">
+                    <i class="bi bi-grid-fill fs-4"></i>
+                </div>
+            </div>
+            <small class="text-muted mt-2 d-block">
+                <%= zonas.filter(z => z.zona.getEsRefrigerada()).length %> refrigeradas / 
+                <%= zonas.filter(z => !z.zona.getEsRefrigerada()).length %> secas
+            </small>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="card p-3 border-start border-warning border-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted small text-uppercase fw-bold">Ventas Totales</span>
+                    <h3 class="fw-bold text-warning mb-0 mt-1">$<%= Number(ventasMetricas.total_recaudado || 0).toLocaleString('es-AR', { minimumFractionDigits: 2 }) %></h3>
+                </div>
+                <div class="p-3 bg-warning bg-opacity-10 text-warning rounded-circle">
+                    <i class="bi bi-receipt fs-4"></i>
+                </div>
+            </div>
+            <small class="text-muted mt-2 d-block"><%= ventasMetricas.total_ventas || 0 %> operaciones (<%= ventasMetricas.unidades_vendidas || 0 %> uds vendidas)</small>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Estado de las Zonas de Almacenamiento -->
+    <div class="col-lg-7">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center py-3">
+                <span class="h6 mb-0 fw-bold"><i class="bi bi-pie-chart-fill me-2 text-primary"></i> Capacidad y Ocupación por Zona</span>
+                <a href="/zonas" class="btn btn-sm btn-outline-primary">Ver Zonas</a>
+            </div>
+            <div class="card-body">
+                <% if (zonas.length === 0) { %>
+                    <p class="text-muted text-center py-4">No hay zonas configuradas en el sistema.</p>
+                <% } else { %>
+                    <div class="list-group list-group-flush">
+                        <% zonas.forEach(z => { %>
+                            <div class="list-group-item px-0 py-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <div>
+                                        <a href="/zonas/<%= z.zona.getId() %>" class="fw-bold text-dark text-decoration-none">
+                                            <%= z.zona.getNombre() %> (ID: <%= z.zona.getId() %>)
+                                        </a>
+                                        <% if (z.zona.getEsRefrigerada()) { %>
+                                            <span class="badge badge-frio ms-1"><i class="bi bi-snow"></i> Refrigerada</span>
+                                        <% } else { %>
+                                            <span class="badge badge-seco ms-1"><i class="bi bi-sun"></i> Secos</span>
+                                        <% } %>
+                                    </div>
+                                    <span class="badge <%= z.porcentajeOcupacion >= 90 ? 'bg-danger' : (z.porcentajeOcupacion >= 70 ? 'bg-warning text-dark' : 'bg-success') %>">
+                                        <%= z.cantidadOcupada %> / <%= z.capacidadMaxima %> productos (<%= z.porcentajeOcupacion %>%)
+                                    </span>
+                                </div>
+                                <div class="progress" style="height: 10px;">
+                                    <div class="progress-bar <%= z.porcentajeOcupacion >= 90 ? 'bg-danger' : (z.porcentajeOcupacion >= 70 ? 'bg-warning' : 'bg-success') %>" 
+                                         role="progressbar" 
+                                         style="width: <%= z.porcentajeOcupacion %>%">
+                                    </div>
+                                </div>
+                                <small class="text-muted d-block mt-1">Disponibles: <%= z.capacidadDisponible %> lugares</small>
+                            </div>
+                        <% }) %>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <!-- Últimas Ventas -->
+    <div class="col-lg-5">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center py-3">
+                <span class="h6 mb-0 fw-bold"><i class="bi bi-clock-history me-2 text-warning"></i> Últimas Ventas</span>
+                <a href="/ventas" class="btn btn-sm btn-outline-secondary">Ver Historial</a>
+            </div>
+            <div class="card-body p-0">
+                <% if (ultimasVentas.length === 0) { %>
+                    <p class="text-muted text-center py-4">No se han registrado ventas recientemente.</p>
+                <% } else { %>
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Cant</th>
+                                    <th>Total</th>
+                                    <th>Cajero</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% ultimasVentas.forEach(v => { %>
+                                    <tr>
+                                        <td>
+                                            <div class="fw-semibold"><%= v.producto_nombre %></div>
+                                            <small class="text-muted"><%= v.pais_de_origen %></small>
+                                        </td>
+                                        <td><%= v.cantidad %></td>
+                                        <td class="text-success fw-bold">$<%= Number(v.total_cobrado).toFixed(2) %></td>
+                                        <td><small class="badge bg-light text-dark border"><%= v.empleado_nombre %></small></td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

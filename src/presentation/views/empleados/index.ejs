@@ -1,0 +1,82 @@
+<%- include('../partials/header') %>
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+    <div>
+        <h2 class="fw-bold mb-1">Nómina de Empleados</h2>
+        <p class="text-muted mb-0">Jerarquía del personal y niveles de autorización en el inventario y caja.</p>
+    </div>
+    <a href="/empleados/nuevo" class="btn btn-primary d-flex align-items-center gap-2">
+        <i class="bi bi-person-plus-fill"></i> Registrar Nuevo Empleado
+    </a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Legajo / ID</th>
+                    <th>Nombre Completo</th>
+                    <th>Puesto Jerárquico</th>
+                    <th>Permisos del Sistema</th>
+                    <th>Zona Asignada</th>
+                    <th>Fecha de Ingreso</th>
+                    <th class="text-end">Salario</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (empleados.length === 0) { %>
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            No hay empleados registrados en el sistema.
+                        </td>
+                    </tr>
+                <% } else { %>
+                    <% empleados.forEach(e => { %>
+                        <tr>
+                            <td><code>#<%= e.getId() %></code></td>
+                            <td class="fw-bold"><%= e.getNombreCompleto() %></td>
+                            <td>
+                                <% if (e.getPuesto() === 'Gerente') { %>
+                                    <span class="badge bg-danger"><i class="bi bi-star-fill me-1"></i> Gerente</span>
+                                <% } else if (e.getPuesto() === 'Supervisor') { %>
+                                    <span class="badge bg-primary"><i class="bi bi-shield-shaded me-1"></i> Supervisor</span>
+                                <% } else if (e.getPuesto() === 'Cajero') { %>
+                                    <span class="badge bg-warning text-dark"><i class="bi bi-cash-coin me-1"></i> Cajero</span>
+                                <% } else { %>
+                                    <span class="badge bg-secondary"><i class="bi bi-person me-1"></i> Operario</span>
+                                <% } %>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column gap-1">
+                                    <% if (e.puedeAgregarProductos()) { %>
+                                        <small class="text-success"><i class="bi bi-check-circle-fill me-1"></i> Cargar Productos</small>
+                                    <% } else { %>
+                                        <small class="text-muted"><i class="bi bi-x-circle me-1"></i> Sin carga de productos</small>
+                                    <% } %>
+
+                                    <% if (e.puedeOperarCaja()) { %>
+                                        <small class="text-success"><i class="bi bi-check-circle-fill me-1"></i> Operar Caja (Ventas)</small>
+                                    <% } else { %>
+                                        <small class="text-muted"><i class="bi bi-x-circle me-1"></i> Sin acceso a caja</small>
+                                    <% } %>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border">
+                                    <i class="bi bi-geo-alt me-1"></i><%= e.getZonaAsignada() %>
+                                </span>
+                            </td>
+                            <td><%= e.getFechaIngreso().toLocaleDateString('es-AR') %></td>
+                            <td class="text-end fw-bold text-dark">
+                                $<%= e.getSalario().toLocaleString('es-AR', { minimumFractionDigits: 2 }) %>
+                            </td>
+                        </tr>
+                    <% }) %>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>
