@@ -10,12 +10,12 @@ La arquitectura sigue una estricta separación de responsabilidades:
 
 ```
 src/
-├── presentation/          👉 CAPA 1: PRESENTACIÓN (UI / Vistas y Controladores)
+├── presentation/          CAPA 1: PRESENTACIÓN (UI / Vistas y Controladores)
 │   ├── controllers/      Controladores que procesan las peticiones HTTP y orquestan respuestas
 │   ├── routes/           Enrutamiento modular de Express
 │   └── views/            Plantillas EJS renderizadas en el servidor con Bootstrap 5
 │
-├── business/              👉 CAPA 2: NEGOCIO (Reglas del Dominio y Servicios)
+├── business/              CAPA 2: NEGOCIO (Reglas del Dominio y Servicios)
 │   ├── models/           Entidades POO con encapsulamiento y polimorfismo
 │   │   ├── Empleado.js
 │   │   ├── Zona.js
@@ -30,7 +30,7 @@ src/
 │       ├── EmpleadoService.js
 │       └── DescuentoService.js
 │
-├── data/                  👉 CAPA 3: DATOS / PERSISTENCIA (DAOs y Repositorios)
+├── data/                  CAPA 3: DATOS / PERSISTENCIA (DAOs y Repositorios)
 │   ├── EmpleadoRepository.js
 │   ├── ZonaRepository.js
 │   ├── ProductoRepository.js
@@ -43,7 +43,7 @@ src/
 
 ---
 
-## 📋 Reglas de Negocio Implementadas
+## Reglas de Negocio Implementadas
 
 1. **Jerarquía y Permisos de Empleados**:
    - **Gerente**: Autorizado para todas las operaciones (ingreso de productos y operación de caja).
@@ -66,7 +66,7 @@ src/
 
 ---
 
-## 🚀 Puesta en Marcha
+## Puesta en Marcha
 
 ### 1. Variables de Entorno (`.env`)
 Revisa o edita el archivo `.env` en la raíz de `GestionAlmacenamiento/`:
@@ -104,7 +104,7 @@ La aplicación estará lista en: **`http://localhost:3000`**
 
 ---
 
-## 🖥️ Módulos de la Aplicación Web
+## Módulos de la Aplicación Web
 
 - **Dashboard (`/`)**: Resumen del valor total del inventario valorizado con descuentos, stock global, ocupación gráfica de cada zona y últimas ventas.
 - **Catálogo de Productos (`/productos`)**: Listado completo con filtros por zona o término de búsqueda, badges térmicos y ajuste rápido de stock.
