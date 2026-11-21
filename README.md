@@ -4,7 +4,7 @@ Aplicación monolítica completa en **3 capas** para la gestión de inventario, 
 
 ---
 
-## 🏛️ Arquitectura de la Aplicación (3 Capas)
+## Arquitectura de la Aplicación (3 Capas)
 
 La arquitectura sigue una estricta separación de responsabilidades:
 
